@@ -17,4 +17,5 @@ export default {
   users: db.collection("users"),
   markers: db.collection("markers"),
   workouts: db.collection("workouts"),
+  questionboard: db.collection("questionboard"),
 };

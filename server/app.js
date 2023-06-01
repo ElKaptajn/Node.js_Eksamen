@@ -1,7 +1,13 @@
 import dotenv from 'dotenv/config';
 
+import { ObjectId } from 'mongodb';
+
 import express from 'express';
 const app = express();
+
+import db from "./database/connection.js";
+
+app.use(express.json());
 
 import helmet from 'helmet';
 app.use(helmet());
@@ -29,8 +35,6 @@ const apiLimiter = rateLimit({
 });
 app.use(apiLimiter);
 
-app.use(express.json());
-
 app.use("/auth", rateLimit({
 	windowMs: 15 * 60 * 1000, 
 	max: 100, //Change after testing is done 
@@ -53,6 +57,44 @@ const isAuthenticated = (req, res, next) => {
         res.status(403).send("Forbidden");
     }
 };
+
+import http from "http";
+import { Server } from "socket.io";
+
+const server = http.createServer(app);
+const io = new Server(server, {
+  cors: {
+    origin: "*",
+    methods: ["*"],
+  },
+});
+
+io.on("connection", async(socket) => {
+
+  socket.on("question", async (data) => {
+    console.log("Received question: " + data)
+    const newQuestion = await db.questionboard.insertOne(data);
+    io.emit("newQuestion", data);
+  });
+
+  socket.on("answer", async (data) => {
+    console.log("Received answer: ", data);
+    const updatedQuestion = await db.questionboard.findOneAndUpdate(
+      { _id: new ObjectId(data.questionId) }, 
+      { $push: { answers: data } },
+      { returnOriginal: false } 
+    );
+  
+
+    if (updatedQuestion.value) {
+      io.emit("newAnswer", { user: data.user, text: data.text, questionId: data.questionId });
+    }
+});
+  
+});
+
+import questionRouter from "./routes/questionRouter.js";
+app.use(questionRouter);
   
 import userRouter from "./routes/userRouter.js";
 app.use(userRouter);
@@ -71,4 +113,4 @@ app.get("*", (req, res) => {
 });
 
 const PORT = process.env.PORT || 8080;
-const server = app.listen(PORT, () => console.log("Server is running on port", server.address().port));
+server.listen(PORT, () => console.log("Server is running on port", server.address().port));
