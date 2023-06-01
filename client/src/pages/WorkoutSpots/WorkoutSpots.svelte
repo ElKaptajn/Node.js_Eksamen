@@ -61,7 +61,7 @@
 
 <main>
     <h1>Workout Spots</h1>
-    <h2>Here you can find all the workout spots in Copenhagen. Select a workout spot on the map to see user made workouts for each spots.</h2>
+    <h2>Here you can find all the workout spots in Copenhagen. Select a workout spot on the map to see user made workouts for each spot.</h2>
     <div class="container">
            <div class="map-area">
             {#if $authStore.isAuthenticated && $selectedWorkoutMarker}

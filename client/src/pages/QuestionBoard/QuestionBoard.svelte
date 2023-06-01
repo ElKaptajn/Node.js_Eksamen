@@ -13,15 +13,17 @@
     onMount( async () => {
 
     const response = await fetch(`${$BASE_URL}/questions`);
-    questions.set(await response.json());
+    let receivedQuestions = await response.json();
+    receivedQuestions.sort((a, b) => new Date(b.date) - new Date(a.date));
+    questions.set(receivedQuestions);
 
-      socket.on('newQuestion', (data) => {
+    socket.on('newQuestion', (data) => {
         console.log('received new question:', data);
-        questions.update((qs) => [...qs, data]);
-      });
+        questions.update((qs) => [data, ...qs]);
+    });
   
       socket.on('newAnswer', (data) => {
-        console.log('received new answer:', data);
+        console.log('received new answer:', data); 
         questions.update((qs) => {
             const questionIndex = qs.findIndex((question) => question._id === data.questionId);
             if (questionIndex !== -1) {
@@ -29,7 +31,7 @@
                 if (!Array.isArray(newQuestion.answers)) {
                     newQuestion.answers = [];
                 }
-                newQuestion.answers.push({ text: data.text });
+                newQuestion.answers.push({ user: data.user, text: data.text });
 
                 // Replaces the array for Svelte to recognize the update
                 qs = [
@@ -56,6 +58,11 @@
       socket.emit('answer', data);
       answerInput.set('');
     }
+
+    function formatDate(dateString) {
+        const options = { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' };
+        return new Date(dateString).toLocaleString('en-UK', options);   
+    }
   </script>
   
   <main>
@@ -74,8 +81,9 @@
     {:else}
       {#each $questions as question}
         <div class="question">
-          <h3 class="margin-left">{question.user} asks:</h3>
-          <p class="margin-left">{question.text}</p>
+            <h3 class="margin-left">{question.user} asks:</h3>
+            <p class="margin-left">{question.text}</p>
+            <p class="margin-left highlight-username">{formatDate(question.date)}</p>
           <button class="show-answer-button" on:click={() => question.open = !question.open}>
             {question.open ? "Hide answers" : "Show answers"}
           </button>
@@ -151,12 +159,14 @@
       width: 80vw;
       padding: 1rem;
       border: 1px solid black;
+      border-radius: 15px;
     }
   
     .answer {
       margin: 10px 0;
       padding: 10px;
       border: 1px solid grey;
+      border-radius: 10px;
     }
 
     .input-field {
