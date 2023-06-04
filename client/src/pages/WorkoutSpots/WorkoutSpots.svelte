@@ -21,7 +21,7 @@
             zoom: 12,
         });
 
-        const response = await fetch(`${$BASE_URL}/markers`);
+        const response = await fetch(`${$BASE_URL}/markers`, {credentials: 'include'});
         const markers = await response.json();
 
         markers.forEach((marker) => {
@@ -44,7 +44,7 @@
                 },
             });
             googleMarker.addListener("click", async () => {
-                const response = await fetch(`${$BASE_URL}/workouts/${marker.name}`);
+                const response = await fetch(`${$BASE_URL}/workouts/${marker.name}`, { credentials: 'include'} );
                 const workoutspots = await response.json();
                 workouts.set(workoutspots);
                 selectedWorkoutMarker.set(marker);
@@ -56,6 +56,25 @@
     selectedWorkout.set(workout);
     navigate("/workoutdetails");
     }
+
+    function deleteWorkout(workoutId, wourkoutImage) {
+
+        const imageKey = wourkoutImage.split("/").pop();
+        console.log(imageKey);
+
+        fetch(`${$BASE_URL}/image/${imageKey}`, {
+            method: "DELETE",
+            credentials: "include",
+        });
+
+        fetch(`${$BASE_URL}/workouts/${workoutId}`, {
+            method: 'DELETE',
+            credentials: 'include'
+        });
+
+        workouts.update(currentWorkouts => currentWorkouts.filter(workout => workout._id !== workoutId));
+}
+
 
 </script>
 
@@ -84,6 +103,9 @@
                                 <p class="workoutrating"><StarRating rating={workout.rating} /></p>
                                 <p>{workout.description}</p>
                             </div>
+                            {#if $authStore.username === workout.createdBy}
+                                <button on:click={ () => deleteWorkout(workout._id, workout.image)} >Delete</button>
+                            {/if}
                         </div>
                     {/each}
                 </div>

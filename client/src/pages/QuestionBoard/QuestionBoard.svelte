@@ -5,20 +5,19 @@
     import { authStore } from '../../store/authStores';
     import { BASE_URL } from '../../store/globalStores';
   
-    const socket = io('http://localhost:8080');
+    const socket = io(`${$BASE_URL}`);
     const questions = writable([]);
     export const questionInput = writable('');
     export const answerInput = writable('');
   
     onMount( async () => {
 
-    const response = await fetch(`${$BASE_URL}/questions`);
+    const response = await fetch(`${$BASE_URL}/questions`, {credentials: 'include'});
     let receivedQuestions = await response.json();
-    receivedQuestions.sort((a, b) => new Date(b.date) - new Date(a.date));
+    receivedQuestions.sort( (a, b) => new Date(b.date) - new Date(a.date) );
     questions.set(receivedQuestions);
 
     socket.on('newQuestion', (data) => {
-        console.log('received new question:', data);
         questions.update((qs) => [data, ...qs]);
     });
   

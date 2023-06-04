@@ -2,6 +2,7 @@
     import { useNavigate } from "svelte-navigator";
     import { BASE_URL } from "../../store/globalStores.js";
     import { toast } from '@zerodevx/svelte-toast';
+    import { authStore } from "../../store/authStores.js";
 
     const navigate = useNavigate();
 
@@ -11,14 +12,28 @@
     let description;
     let exercises = [{name: '', description: '', sets: '', reps: ''}];
 
-    async function handleSubmit() {
-        const workoutData = {locationname, workoutname, rating, description, exercises};
+    async function handleSubmit(event) {
+
+    const imageFile = event.target.elements.image.files[0];
+    const formData = new FormData();
+    formData.append('image', imageFile);
+
+        const uploadResponse = await fetch(`${$BASE_URL}/image`, {
+            method: 'POST',
+            credentials: 'include',
+            body: formData,
+        });
+
+        const uploadData = await uploadResponse.text();
+
+        const workoutData = {locationname, workoutname, rating, description, image: uploadData, createdBy: $authStore.username, exercises};
         
         const res = await fetch(`${$BASE_URL}/workouts`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
+            credentials: 'include',
             body: JSON.stringify(workoutData)
         });
 
@@ -65,7 +80,8 @@
         <br />
         <textarea bind:value={description} placeholder="Workout Description" class="input-field"></textarea>
         <br />
-
+        <input name="image" type="file" class="input-field" />
+        <br />
         <button type="button" on:click={addExercise} class="excercise-button">Add Exercise</button>
         <br />
         <button type="submit" class="">Add Workout</button>

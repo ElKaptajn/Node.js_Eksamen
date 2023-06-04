@@ -1,3 +1,5 @@
+import { ObjectId } from "mongodb";
+
 import { Router } from "express";
 const router = Router();
 
@@ -15,7 +17,7 @@ router.get('/markers', async (req, res) => {
 
 router.get('/markers/:id([0-9a-fA-F]{24})', async (req, res) => {
     try {
-        const foundMarker = await db.markers.findOne({ _id: req.params.id });
+        const foundMarker = await db.markers.findOne({ _id: new ObjectId(req.params.id) });
         if (!foundMarker) {
             return res.status(404).send("No marker found.");
         }
@@ -68,11 +70,11 @@ router.put('/markers/:id', async (req, res) => {
         return res.status(400).send({ message: "Missing key in the body" });
     }
     try {
-        const updateMarker = await db.markers.updateOne({ _id: req.params.id }, { $set: { name: req.body.name, description: req.body.description, lat: req.body.lat, lng: req.body.lng } });
+        const updateMarker = await db.markers.updateOne({ _id: new ObjectId(req.params.id) }, { $set: { name: req.body.name, description: req.body.description, lat: req.body.lat, lng: req.body.lng } });
         if (updateMarker.matchedCount === 0) {
             return res.status(404).send("No marker found.");
         }
-        res.status(200).send({ message: "Marker updated", _id: req.params.id });
+        res.status(200).send({ message: "Marker updated", _id: new ObjectId(req.params.id) });
     } catch (error) {
         console.log(error);
         res.status(500).send("Error during marker update.");
@@ -81,7 +83,7 @@ router.put('/markers/:id', async (req, res) => {
 
 router.delete('/markers/:id', async (req, res) => {
     try {
-        const deleteMarker = await db.markers.deleteOne({ _id: req.params.id });
+        const deleteMarker = await db.markers.deleteOne({ _id: new ObjectId(req.params.id) });
         if (deleteMarker.deletedCount === 0) {
             return res.status(404).send("No marker found.");
         }

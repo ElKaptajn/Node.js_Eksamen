@@ -44,6 +44,7 @@ app.use("/auth", rateLimit({
 
 const isAuthenticated = (req, res, next) => {
     if (req.session.user) {
+      console.log("Session user in app.js: " + req.session.user)
       next();
     } else {
       res.status(401).send("Unauthorized");
@@ -93,20 +94,23 @@ io.on("connection", async(socket) => {
   
 });
 
+import authRouter from "./routes/authRouter.js";
+app.use(authRouter);
+
 import questionRouter from "./routes/questionRouter.js";
 app.use(questionRouter);
   
 import userRouter from "./routes/userRouter.js";
 app.use(userRouter);
 
-import authRouter from "./routes/authRouter.js";
-app.use(authRouter);
-
 import markerRouter from "./routes/markerRouter.js";
 app.use(markerRouter);
 
 import workoutRouter from "./routes/workoutRouter.js";
 app.use(workoutRouter);
+
+import imageRouter from "./routes/imageRouter.js";
+app.use(imageRouter);
 
 app.get("*", (req, res) => {
     res.send("<h1>404 - Not Found</h1>")

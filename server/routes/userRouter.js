@@ -1,3 +1,4 @@
+import { ObjectId } from "mongodb";
 import { Router } from "express";
 import bcrypt from "bcrypt";
 const router = Router();
@@ -16,7 +17,7 @@ router.get("/users", async (req, res) => {
 
 router.get("/users/:id([0-9a-fA-F]{24})", async (req, res) => {
     try {
-        const foundUser = await db.users.findOne({ _id: req.params.id });
+        const foundUser = await db.users.findOne({ _id: new ObjectId(req.params.id) });
         if (!foundUser) {
             return res.status(404).send("No user found.");
         }
@@ -61,7 +62,7 @@ router.put("/users/:id", async (req, res) => {
     const encryptedPassword = await bcrypt.hash(req.body.password, 12);
     try {
         const updateUser = await db.users.updateOne(
-            { _id: req.params.id },
+            { _id: new ObjectId(req.params.id) },
             { $set: { username: req.body.username, password: encryptedPassword, role: req.body.role } }
         );
         if(updateUser.modifiedCount === 0){
@@ -76,7 +77,7 @@ router.put("/users/:id", async (req, res) => {
 
 router.delete("/users/:id", async (req, res) => {
     try {
-        const deleteUser = await db.users.deleteOne({ _id: req.params.id });
+        const deleteUser = await db.users.deleteOne({ _id: new ObjectId(req.params.id) });
         if(deleteUser.deletedCount === 0){
             return res.status(404).send({ message: "User not found" });
         }

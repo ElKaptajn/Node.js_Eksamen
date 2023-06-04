@@ -19,7 +19,7 @@
             const google = await loader.load();
 
             try {
-                const response = await fetch(`${$BASE_URL}/markers/name/${workout.locationname}`);
+                const response = await fetch(`${$BASE_URL}/markers/name/${workout.locationname}`, {credentials: 'include'});
                 if (!response.ok) { 
                     console.log('Error: Response not OK', response.status, response.statusText);
                     return;

@@ -37,7 +37,7 @@
     flex-direction: column;
 }
 
- h1, h2, h3 {
+ h2, h3 {
         margin-bottom: 0;
   }
 

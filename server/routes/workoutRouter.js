@@ -1,5 +1,5 @@
-import { Router } from "express";
 import { ObjectId } from "mongodb";
+import { Router } from "express";
 const router = Router();
 
 import db from "../database/connection.js";
@@ -16,7 +16,7 @@ router.get("/workouts", async (req, res) => {
 
 router.get("/workouts/:id([0-9a-fA-F]{24})", async (req, res) => {
     try {
-        const foundWorkout = await db.workouts.findOne({ _id: ObjectId(req.params.id) });
+        const foundWorkout = await db.workouts.findOne({ _id: new ObjectId(req.params.id) });
         if (!foundWorkout) {
             return res.status(404).send("No workout found.");
         }
@@ -72,7 +72,7 @@ router.put("/workouts/:id([0-9a-fA-F]{24})", async (req, res) => {
     }
 
     try {
-        const updateWorkout = await db.workouts.updateOne({ _id: ObjectId(req.params.id) }, { $set: req.body });
+        const updateWorkout = await db.workouts.updateOne({ _id: new ObjectId(req.params.id) }, { $set: req.body });
         if (updateWorkout.matchedCount === 0) {
             return res.status(404).send("No workout found.");
         }
@@ -83,11 +83,21 @@ router.put("/workouts/:id([0-9a-fA-F]{24})", async (req, res) => {
     }
 });
 
+
 router.delete("/workouts/:id([0-9a-fA-F]{24})", async (req, res) => {
     try {
-        const deleteWorkout = await db.workouts.deleteOne({ _id: ObjectId(req.params.id) });
-        if (deleteWorkout.deletedCount === 0) {
+
+        const foundWorkout = await db.workouts.findOne({ _id: new ObjectId(req.params.id) });
+
+        if (!foundWorkout) {
             return res.status(404).send("No workout found.");
+        }
+        
+        if(foundWorkout.createdBy !== req.session.user || req.session.role !== "ROLE_ADMIN") return res.status(401).send("Unauthorized");
+     
+        const deleteWorkout = await db.workouts.deleteOne({ _id: new ObjectId(req.params.id) });
+        if (deleteWorkout.deletedCount === 0) {
+            return res.status(404).send("No workout found.");   
         }
         res.status(200).send({ message: "Workout deleted", _id: req.params.id });
     } catch (error) {
