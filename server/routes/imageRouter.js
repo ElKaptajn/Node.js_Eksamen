@@ -26,19 +26,19 @@ router.post('/image', isAuthenticated, upload.single('image'), (req, res) => {
             }
         });
     } catch(err) {
-        res.send("src/assets/images/pulling-up-training-silhouette-svgrepo-com.png")
+        res.send("https://workoursidebucket.s3.eu-north-1.amazonaws.com/pulling-up-training-silhouette-svgrepo-com.png")
     }
 });
 
 router.delete('/image/:imageUrl', isAuthenticated, (req, res) => {
     const imageKey = req.params.imageUrl;
 
-    if(req.session.user !== imageKey.split("$")[0]) return res.send("You are not authorized to delete this image");
-    
-    if(imageKey === "src/assets/images/pulling-up-training-silhouette-svgrepo-com.png") {
+    if(imageKey === "pulling-up-training-silhouette-svgrepo-com.png") {
         return res.send("Default image cannot be deleted");
     }
 
+    if(req.session.user !== imageKey.split("$")[0]) return res.send("You are not authorized to delete this image");
+    
     s3.deleteObject({
         Bucket: process.env.AWS_BUCKET_NAME,
         Key: imageKey,

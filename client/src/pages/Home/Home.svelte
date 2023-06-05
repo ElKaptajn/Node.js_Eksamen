@@ -1,6 +1,7 @@
 <script>
     import { useNavigate } from "svelte-navigator";
     import frontpageImage from '../../assets/images/frontpage_image.jpg';
+    import logo from "../../assets/images/workout_side_logo.png"
 
     const navigate = useNavigate();
 </script>
@@ -9,7 +10,7 @@
   <div class="image-container">
       <img class="image-brigthness" src={frontpageImage} alt="">
       <div class="overlay-text">
-          <img src="src/assets/images/workout_side_logo.png" style="width: 225px; height: 150px;" alt="">
+          <img src={logo} style="width: 225px; height: 150px;" alt="">
           <h2 class="text-shadow">Elevate Your Workout Experience</h2>
           <h3 class="text-shadow">Find hidden gems of outdoor fitness in Copenhagen and with personalized workout routines. Let's fuel your passion for fitness!</h3>
           <div class="card-container">

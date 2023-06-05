@@ -75,7 +75,7 @@
                 <br />
                 <input bind:value={workoutname} type="text" placeholder="Workout Name" class="input-field" required />
                 <br />
-                <input bind:value={rating} type="number" min="1" max="5" placeholder="Rating (1-5)" class="input-field" required />
+                <input bind:value={rating} type="number" min="1" max="5" placeholder="Difficulty rating (1-5)" class="input-field" required />
                 <br />
                 <textarea bind:value={description} placeholder="Workout Description" class="input-field" required />
                 <br />
@@ -136,7 +136,7 @@
         color: #333333;
         cursor: pointer;
         transition: all 0.3s ease;
-        margin-bottom: 20px;
+        margin-bottom: 35px;
     }
 
         button:hover {

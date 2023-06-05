@@ -4,6 +4,6 @@
 
 <span>
     {#each Array(rating) as _, i}
-        ⭐
+        💪
     {/each}
 </span>

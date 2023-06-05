@@ -6,6 +6,7 @@
     import { workouts, sortedWorkouts, selectedWorkout, selectedWorkoutMarker } from '../../store/workoutStores.js';
     import StarRating from '../../components/StarRating.svelte';
     import { authStore } from "../../store/authStores.js";
+    import pullupIcon from "../../assets/images/pulling-up-training-silhouette-svgrepo-com.png"
 
     let mapDiv;
 
@@ -38,7 +39,7 @@
                     text: marker.name, 
                 },
                 icon: {
-                    url: 'src/assets/images/pulling-up-training-silhouette-svgrepo-com.png',
+                    url: pullupIcon,
                     scaledSize: new google.maps.Size(42, 42),
                     labelOrigin: new google.maps.Point(21, -10),
                 },
@@ -60,7 +61,6 @@
     function deleteWorkout(workoutId, wourkoutImage) {
 
         const imageKey = wourkoutImage.split("/").pop();
-        console.log(imageKey);
 
         fetch(`${$BASE_URL}/image/${imageKey}`, {
             method: "DELETE",
@@ -82,7 +82,8 @@
     <h1>Workout Spots</h1>
     <h2>Here you can find all the workout spots in Copenhagen. Select a workout spot on the map to see user made workouts for each spot.</h2>
     <div class="container">
-        <div class="map-area"> {#if $authStore.isAuthenticated && $selectedWorkoutMarker}
+        <div class="map-area">
+            {#if $authStore.isAuthenticated && $selectedWorkoutMarker}
                 <button class="large-button" on:click={ () => navigate(`/createworkout/${$selectedWorkoutMarker.name}`) } >Add workout to: {$selectedWorkoutMarker.name}</button>
             {:else}
                 <div class="empty-space-for-large-button"></div>
@@ -93,17 +94,23 @@
         </div>
         <div class="content-container">
             <h2 class="margin-for-rigth-side">{ $selectedWorkoutMarker ? "Workouts for: " + $selectedWorkoutMarker.name : " Select a location to see the workouts" }</h2>
+            {#if $selectedWorkoutMarker}
+            <div class="description-card">
+                <h3>Description:</h3>
+                <h4>{$selectedWorkoutMarker.description}</h4>
+            </div>
+            {/if}
             <div class="workouts-list">
                 {#each $sortedWorkouts as workout}
                 <div class="workout-item" on:click={() => navigateWithWorkoutDetails(workout)} on:keypress={e => {if (e.key === 'Enter') navigateWithWorkoutDetails(workout)}}>
-                    <img src={workout.image ? workout.image : 'src/assets/images/pulling-up-training-silhouette-svgrepo-com.png'} alt="">
+                    <img src={workout.image ? workout.image : pullupIcon } alt="">
                         <div>
                             <p class="workoutname">{workout.workoutname}</p>
-                            <p class="workoutrating"><StarRating rating={workout.rating} /></p>
+                            <p class="workoutrating">Difficulty:<StarRating rating={workout.rating} /></p>
                             <p>{workout.description}</p>
                         </div>
                         {#if $authStore.username === workout.createdBy}
-                            <button on:click={ () => deleteWorkout(workout._id, workout.image)} >Delete</button>
+                            <button class="delete-button" on:click={ () => deleteWorkout(workout._id, workout.image)} >Delete</button>
                         {/if}
                     </div>
                 {/each}
@@ -126,6 +133,19 @@
         margin-top: 10px;
         text-align: center;
         margin-bottom: 0;
+    }
+
+    .description-card {
+        background-color: #a8cbe6;
+        border-radius: 10px;
+        box-shadow: #333;
+        padding: 10px;
+        margin-bottom: 10px;
+    }
+
+    .delete-button {
+        background-color: red;
+
     }
 
     .empty-space-for-large-button {
@@ -186,6 +206,7 @@
         width: 50%; 
         padding-left: 10px; 
         text-align: center;
+        margin-bottom: 50px;
     }
 
     .workouts-list {

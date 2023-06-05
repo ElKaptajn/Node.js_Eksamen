@@ -13,6 +13,7 @@
     import WorkoutSpots from "./pages/WorkoutSpots/WorkoutSpots.svelte";
     import CreateWorkout from "./pages/CreateWorkout/CreateWorkout.svelte";
     import QuestionBoard from "./pages/QuestionBoard/QuestionBoard.svelte";
+    import logo from "./assets/images/workout_side_logo.png"
 
     let isLoading = true;
 
@@ -21,20 +22,17 @@
         
         fetch(`${$BASE_URL}/auth/logout`, {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
             credentials: 'include'
         });
     };
 
     // simulate a delay to test the spinner
-    //  setTimeout(() => {
-    //     isLoading = false;
-    //   }, 1000);
+     setTimeout(() => {
+        isLoading = false;
+      }, 1000);
 
     //for producktion
-    window.onload = () => isLoading = false;
+    // window.onload = () => isLoading = false;
 </script>
 
 <SvelteToast options={{ reversed: true, intro: { y: 192 } }} />
@@ -49,7 +47,7 @@
       <nav>
         <div class="nav-container-left">
           <div class="nav-link">
-            <Link to="/"><img src="src/assets/images/workout_side_logo.png" alt="Company Logo"></Link>
+            <Link to="/"><img src={logo} alt="Company Logo"></Link>
           </div>
           <div class="nav-link">
             <Link to="/workoutspots" style="color: #333; font-size: 20px;">Workout-Spots</Link>
@@ -100,7 +98,6 @@
       </PrivateRoute>
       <PrivateRoute path="/admin" adminOnly={true} let:location>
         <Admin />
-        <button on:click={handleLogout}>Logout</button>
       </PrivateRoute>
     </Router>
   {/if}

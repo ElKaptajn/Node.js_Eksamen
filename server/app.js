@@ -1,5 +1,4 @@
 import dotenv from 'dotenv/config';
-import { isAuthurized, isAuthenticated } from "./security/security.js"
 import { ObjectId } from 'mongodb';
 
 import express from 'express';
@@ -30,7 +29,7 @@ import rateLimit from 'express-rate-limit';
 const apiLimiter = rateLimit({
     windowMs: 15 * 60 * 1000, 
     max: 100, 
-    standardHeaders: true,
+    standardHeaders: true, 
     legacyHeaders: false, 
 });
 app.use(apiLimiter);
@@ -54,23 +53,22 @@ const io = new Server(server, {
 });
 
 io.on("connection", async(socket) => {
-    socket.on("question", isAuthenticated, async (data) => {
+    socket.on("question", async (data) => {
         const newQuestion = await db.questionboard.insertOne(data);
         io.emit("newQuestion", data);
     });
 
-    socket.on("answer", isAuthenticated, async (data) => {
+    socket.on("answer", async (data) => {
         const updatedQuestion = await db.questionboard.findOneAndUpdate(
             { _id: new ObjectId(data.questionId) }, 
             { $push: { answers: data } },
             { returnOriginal: false } 
         );
 
-      if (updatedQuestion.value) {
-          io.emit("newAnswer", { user: data.user, text: data.text, questionId: data.questionId });
-      }
+        if (updatedQuestion.value) {
+            io.emit("newAnswer", { user: data.user, text: data.text, questionId: data.questionId });
+        }
     });
-  
 });
 
 import authRouter from "./routes/authRouter.js";

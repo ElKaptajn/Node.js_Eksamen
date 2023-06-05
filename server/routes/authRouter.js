@@ -6,7 +6,7 @@ import { Router } from "express";
 const router = Router();
 
 router.get('/auth/verify/:token', async (req, res) => {
-    user = await db.users.findOne({ verificationToken: req.params.token });
+    const user = await db.users.findOne({ verificationToken: req.params.token });
 
     if (!user) {
         return res.status(400).send('Invalid verification token');
@@ -15,7 +15,7 @@ router.get('/auth/verify/:token', async (req, res) => {
     res.send('Your account has been verified. You can now log in.');
 });
 
-router.get("/auth/logout", (req, res) => {
+router.post("/auth/logout", (req, res) => {
     req.session.destroy(() => {
         res.status(200).send({ message: "Logout successful" });
     });

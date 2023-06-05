@@ -4,6 +4,7 @@
     import { selectedWorkout } from '../../store/workoutStores.js';
     import StarRating from '../../components/StarRating.svelte';
     import { BASE_URL } from '../../store/globalStores.js';
+    import pullupIcon from "../../assets/images/pulling-up-training-silhouette-svgrepo-com.png"
 
     let mapDiv;
     let workout;
@@ -63,7 +64,7 @@
         <div class="exercises-list">
             {#each workout?.exercises as exercise, index (exercise.name)}
             <div class="exercise-item">
-                <img src={exercise.image ? exercise.image : 'src/assets/images/pulling-up-training-silhouette-svgrepo-com.png'} alt={exercise.name} />
+                <img src={exercise.image ? exercise.image : pullupIcon } alt={exercise.name} />
                 <div>
                     <p class="exercise-name">{index+1}. {exercise.name}</p>
                     <p class="exercise-details">{exercise.sets} sets of {exercise.reps} reps</p>
