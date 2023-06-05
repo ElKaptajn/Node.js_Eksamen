@@ -3,7 +3,6 @@
     import Home from "./pages/Home/Home.svelte";
     import Login from "./pages/Login/Login.svelte";
     import PrivateRoute from "./routes/PrivateRoute.svelte";
-    import User from "./pages/User/User.svelte";
     import Admin from "./pages/Admin/Admin.svelte";
     import Register from "./pages/Register/Register.svelte";
     import WorkoutDetails from "./pages/WorkoutDetails/WorkoutDetails.svelte";
@@ -18,7 +17,6 @@
     let isLoading = true;
 
     function handleLogout() {
-
         $authStore = { isAuthenticated: false, username: null, role: null };
         
         fetch(`${$BASE_URL}/auth/logout`, {
@@ -49,23 +47,34 @@
   {:else}
     <Router primary={false}>
       <nav>
-        <div class="nav-link">
-          <Link to="/"><img src="src/assets/images/workout_side_logo.png" alt="Company Logo"></Link>
+        <div class="nav-container-left">
+          <div class="nav-link">
+            <Link to="/"><img src="src/assets/images/workout_side_logo.png" alt="Company Logo"></Link>
+          </div>
+          <div class="nav-link">
+            <Link to="/workoutspots" style="color: #333; font-size: 20px;">Workout-Spots</Link>
+          </div>
+          <div class="nav-link">
+            <Link to="/questionboard" style="color: #333; font-size: 20px;">Question-Board</Link>
+          </div>
+          {#if $authStore.role === "ROLE_ADMIN"}
+          <div class="nav-link">
+            <Link to="/admin" style="color: #333; font-size: 20px;">Create Workout-Spot</Link>
+          </div>
+          {/if}
         </div>
-        <div class="nav-link" >
-          <Link to="/login" style="color: #333; font-size: 20px;">Login</Link>
-        </div>
-        <div class="nav-link">
-          <Link to="/user" style="color: #333; font-size: 20px;">User</Link>
-        </div>
-        <div class="nav-link">
-          <Link to="/admin" style="color: #333; font-size: 20px;">Admin</Link>
-        </div>
-        <div class="nav-link">
-          <Link to="/workoutspots" style="color: #333; font-size: 20px;">Workout-Spots</Link>
-        </div>
-        <div class="nav-link">
-          <Link to="/questionboard" style="color: #333; font-size: 20px;">Question-Board</Link>
+        <div class="nav-container-right">
+          {#if $authStore.isAuthenticated}
+          <div class="nav-link">
+            <button class="nav-button" on:click={handleLogout}>Log out</button>
+          </div>
+          {:else}
+          <div class="nav-link">
+            <button class="nav-button">
+              <Link to="/login" style="color: #333; font-size: 20px;">Login</Link>
+            </button>
+          </div>
+          {/if}
         </div>
       </nav>
       <Route path="/">
@@ -89,10 +98,6 @@
       <PrivateRoute path="/questionboard" adminOnly={false} let:location>
         <QuestionBoard />
       </PrivateRoute>
-      <PrivateRoute path="/user" adminOnly={false} let:location>
-        <User username="{$authStore.username}" />
-        <button on:click={handleLogout}>Logout</button>
-      </PrivateRoute>
       <PrivateRoute path="/admin" adminOnly={true} let:location>
         <Admin />
         <button on:click={handleLogout}>Logout</button>
@@ -102,11 +107,27 @@
 </div>
 
 <footer class="footer">
-  <p>Copyright © 2023 Workout Side.
-  </p>
+  <p>Copyright © 2023 Workout Side.</p>
 </footer>
 
 <style>
+  .nav-container-right {
+    display: flex;
+    justify-content: end;
+    margin-left: auto;
+  }
+  
+  .nav-button {
+    align-items: center;
+    margin-bottom: 20px;
+  }
+
+  .nav-container-left {
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+  }
+
   .spinner-container {
     position: relative;
     height: 100vh;
@@ -149,13 +170,15 @@
   nav {
     display: flex;
     align-items: center;
-    justify-content: start;
+    justify-content: space-between;
     background-color: #30A9DE;
     min-width: 100%;
+    text-align: center;
   }
 
   .nav-link {
     margin-left: 10px;
+    margin-right: 20px;
   }
 
   button {
