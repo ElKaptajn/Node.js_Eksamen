@@ -57,7 +57,7 @@
     <div class="workout-details-container">
         <h1>{workout?.workoutname}</h1>
         <h2 class="workout-rating">
-            Rating: <StarRating rating="{workout?.rating}" />
+            Difficulty: <StarRating rating="{workout?.rating}" />
         </h2>
         <h2 class="workout-description">{workout?.description}</h2>
         <h2>Exercises:</h2>

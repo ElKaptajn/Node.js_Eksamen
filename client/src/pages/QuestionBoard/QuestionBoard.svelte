@@ -17,29 +17,29 @@ onMount( async () => {
     questions.set(receivedQuestions);
 
     socket.on('newQuestion', (data) => {
-        questions.update((qs) => [data, ...qs]);
+        questions.update((existingQuestions) => [data, ...existingQuestions]);
     });
   
     socket.on('newAnswer', (data) => {
-        questions.update((qs) => {
-            const questionIndex = qs.findIndex((question) => question._id === data.questionId);
+        questions.update((existingQuestions) => {
+            const updatedQuestionIndex = existingQuestions.findIndex((question) => question._id === data.questionId);
 
-            if (questionIndex !== -1) {
-                const newQuestion = { ...qs[questionIndex] };
-                if (!Array.isArray(newQuestion.answers)) {
-                    newQuestion.answers = [];
+            if (updatedQuestionIndex !== -1) {
+                const updatedQuestion = { ...existingQuestions[updatedQuestionIndex] };
+                if (!Array.isArray(updatedQuestion.answers)) {
+                    updatedQuestion.answers = [];
                 }
 
-                newQuestion.answers.push({ user: data.user, text: data.text });
+                updatedQuestion.answers.push({ user: data.user, text: data.text });
 
                 // Replaces the array for Svelte to recognize the update
-                qs = [
-                    ...qs.slice(0, questionIndex),
-                    newQuestion,
-                    ...qs.slice(questionIndex + 1),
+                existingQuestions = [
+                    ...existingQuestions.slice(0, updatedQuestionIndex),
+                    updatedQuestion,
+                    ...existingQuestions.slice(updatedQuestionIndex + 1),
                 ];
             }
-            return qs;
+            return existingQuestions;
         });
     });
 });
