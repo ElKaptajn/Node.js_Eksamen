@@ -1,9 +1,9 @@
 import { ObjectId } from "mongodb";
-
+import db from "../database/connection.js";
+import { isAuthurized, isAuthenticated } from "../security/security.js"
 import { Router } from "express";
 const router = Router();
 
-import db from "../database/connection.js";
 
 router.get('/markers', async (req, res) => {
     try {
@@ -13,7 +13,7 @@ router.get('/markers', async (req, res) => {
         console.log(error);
         res.status(500).send("Error during fetching markers.");
     }
-  });
+});
 
 router.get('/markers/:id([0-9a-fA-F]{24})', async (req, res) => {
     try {
@@ -41,7 +41,7 @@ router.get('/markers/name/:name', async (req, res) => {
     }
 });
 
-router.post('/markers',  async (req, res) => {
+router.post('/markers', isAuthenticated, isAuthurized,  async (req, res) => {
     if (!req.body.name || !req.body.description || !req.body.lat || !req.body.lng) {
         return res.status(400).send({ message: "Missing key in the body" });
     }
@@ -65,10 +65,11 @@ router.post('/markers',  async (req, res) => {
     }
 });
 
-router.put('/markers/:id', async (req, res) => {
+router.put('/markers/:id', isAuthenticated, isAuthurized, async (req, res) => {
     if (!req.body.name || !req.body.description || !req.body.lat || !req.body.lng) {
         return res.status(400).send({ message: "Missing key in the body" });
     }
+
     try {
         const updateMarker = await db.markers.updateOne({ _id: new ObjectId(req.params.id) }, { $set: { name: req.body.name, description: req.body.description, lat: req.body.lat, lng: req.body.lng } });
         if (updateMarker.matchedCount === 0) {
@@ -81,7 +82,7 @@ router.put('/markers/:id', async (req, res) => {
     }
 });
 
-router.delete('/markers/:id', async (req, res) => {
+router.delete('/markers/:id', isAuthenticated, isAuthurized, async (req, res) => {
     try {
         const deleteMarker = await db.markers.deleteOne({ _id: new ObjectId(req.params.id) });
         if (deleteMarker.deletedCount === 0) {
@@ -93,6 +94,5 @@ router.delete('/markers/:id', async (req, res) => {
         res.status(500).send("Error during marker deletion.");
     }
 });
-
 
 export default router;

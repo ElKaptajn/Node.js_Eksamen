@@ -1,5 +1,5 @@
 import dotenv from 'dotenv/config';
-
+import { isAuthurized, isAuthenticated } from "./security/security.js"
 import { ObjectId } from 'mongodb';
 
 import express from 'express';
@@ -42,23 +42,6 @@ app.use("/auth", rateLimit({
 	legacyHeaders: false,
 }));
 
-const isAuthenticated = (req, res, next) => {
-    if (req.session.user) {
-      console.log("Session user in app.js: " + req.session.user)
-      next();
-    } else {
-      res.status(401).send("Unauthorized");
-    }
-  };
-
-  const isAuthurized = (req, res, next) => {
-    if (req.session.role === "ROLE_ADMIN") {
-        next();
-    } else {
-        res.status(403).send("Forbidden");
-    }
-};
-
 import http from "http";
 import { Server } from "socket.io";
 
@@ -71,26 +54,23 @@ const io = new Server(server, {
 });
 
 io.on("connection", async(socket) => {
-
-  socket.on("question", async (data) => {
+  socket.on("question", isAuthenticated, async (data) => {
     console.log("Received question: " + data)
     const newQuestion = await db.questionboard.insertOne(data);
     io.emit("newQuestion", data);
   });
 
-  socket.on("answer", async (data) => {
+  socket.on("answer", isAuthenticated, async (data) => {
     console.log("Received answer: ", data);
     const updatedQuestion = await db.questionboard.findOneAndUpdate(
       { _id: new ObjectId(data.questionId) }, 
       { $push: { answers: data } },
       { returnOriginal: false } 
     );
-  
-
     if (updatedQuestion.value) {
       io.emit("newAnswer", { user: data.user, text: data.text, questionId: data.questionId });
     }
-});
+  });
   
 });
 
@@ -99,7 +79,7 @@ app.use(authRouter);
 
 import questionRouter from "./routes/questionRouter.js";
 app.use(questionRouter);
-  
+
 import userRouter from "./routes/userRouter.js";
 app.use(userRouter);
 
@@ -113,7 +93,7 @@ import imageRouter from "./routes/imageRouter.js";
 app.use(imageRouter);
 
 app.get("*", (req, res) => {
-    res.send("<h1>404 - Not Found</h1>")
+  res.send("<h1>404 - Not Found</h1>")
 });
 
 const PORT = process.env.PORT || 8080;

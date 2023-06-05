@@ -40,25 +40,13 @@
 <main>
   <h3>Login</h3>
   <form on:submit|preventDefault={handleSubmit}>
-    <input
-      bind:value={username}
-      type="text"
-      name="username"
-      placeholder="Username"
-      class="input-field"
-    />
+    <input bind:value={username} type="text" name="username" placeholder="Username" class="input-field" required />
     <br />
-    <input
-      bind:value={password}
-      type="password"
-      name="password"
-      placeholder="Password"
-      class="input-field"
-    />
+    <input bind:value={password} type="password" name="password" placeholder="Password" class="input-field" required/>
     <br />
-      <button type="submit" class="submit-button">Login</button>
-      <h4>Not a member? Register here:</h4>
-      <button class="submit-button" on:click={ () => navigate("/register") }>Register</button>
+    <button type="submit" class="submit-button">Login</button>
+    <h4>Not a member? Register here:</h4>
+    <button class="submit-button" on:click={ () => navigate("/register") }>Register</button>
   </form>
 </main>
 

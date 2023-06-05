@@ -82,13 +82,13 @@
     <div class="form-container">
       <form on:submit|preventDefault={handleSubmit}>
         <h3>Add Location</h3>
-        <input bind:value={name} type="text" placeholder="Name" class="input-field" />
+        <input bind:value={name} type="text" placeholder="Name" class="input-field" required />
         <br />
-        <textarea bind:value={description} placeholder="Description" class="input-field"></textarea>
+        <textarea bind:value={description} placeholder="Description" class="input-field"  required />
         <br />
-        <input bind:value={lat} type="text" placeholder="Latitude" class="input-field" />
+        <input bind:value={lat} type="text" placeholder="Latitude" class="input-field" required />
         <br />
-        <input bind:value={lng} type="text" placeholder="Longitude" class="input-field" />
+        <input bind:value={lng} type="text" placeholder="Longitude" class="input-field" required />
         <br />
         <button type="submit" class="">Add Location</button>
       </form>

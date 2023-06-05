@@ -104,7 +104,6 @@
 
 <footer class="footer">
   <p>Copyright © 2023 Workout Side.
-    <a href="/home">Privacy Policy</a> & <a href="/home">Terms of Use</a>
   </p>
 </footer>
 
@@ -140,14 +139,6 @@
   .footer p {
     margin: 0;
     font-size: 16px;
-  }
-
-  .footer a {
-    color: #333;
-    text-decoration: none;
-    font-weight: 600;
-    margin-left: 5px;
-    margin-right: 5px;
   }
   
   img {

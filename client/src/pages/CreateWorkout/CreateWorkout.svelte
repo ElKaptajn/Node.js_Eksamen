@@ -74,11 +74,11 @@
         <h3>Add Workout</h3>
         <input bind:value={locationname} type="text" placeholder="Location Name" class="input-field" readonly />
         <br />
-        <input bind:value={workoutname} type="text" placeholder="Workout Name" class="input-field" />
+        <input bind:value={workoutname} type="text" placeholder="Workout Name" class="input-field" required />
         <br />
-        <input bind:value={rating} type="number" min="1" max="5" placeholder="Rating (1-5)" class="input-field" />
+        <input bind:value={rating} type="number" min="1" max="5" placeholder="Rating (1-5)" class="input-field" required />
         <br />
-        <textarea bind:value={description} placeholder="Workout Description" class="input-field"></textarea>
+        <textarea bind:value={description} placeholder="Workout Description" class="input-field" required/>
         <br />
         <input name="image" type="file" class="input-field" />
         <br />
@@ -91,13 +91,13 @@
         {#each exercises as exercise, i}
         <div class="exercise-container">
             <h4>Exercise {i + 1}</h4>
-            <input bind:value={exercise.name} type="text" placeholder="Exercise Name" class="input-field" />
+            <input bind:value={exercise.name} type="text" placeholder="Exercise Name" class="input-field" required />
             <br />
-            <textarea bind:value={exercise.description} placeholder="Exercise Description" class="input-field"></textarea>
+            <textarea bind:value={exercise.description} placeholder="Exercise Description" class="input-field" required />
             <br />
-            <input bind:value={exercise.sets} type="number" min="1" placeholder="Sets" class="input-field" />
+            <input bind:value={exercise.sets} type="number" min="1" placeholder="Sets" class="input-field" required />
             <br />
-            <input bind:value={exercise.reps} type="number" min="1" placeholder="Reps" class="input-field" />
+            <input bind:value={exercise.reps} type="number" min="1" placeholder="Reps" class="input-field" required />
             <br />
             {#if exercises.length > 1}
                 <button type="button" on:click={() => removeExercise(i)} class="excercise-button">Remove Exercise</button>

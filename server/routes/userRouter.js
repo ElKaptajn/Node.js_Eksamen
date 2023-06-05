@@ -1,11 +1,11 @@
 import { ObjectId } from "mongodb";
+import db from "../database/connection.js";
+import { isAuthurized, isAuthenticated } from "../security/security.js"
 import { Router } from "express";
 import bcrypt from "bcrypt";
 const router = Router();
 
-import db from "../database/connection.js";
-
-router.get("/users", async (req, res) => {
+router.get("/users", isAuthurized, isAuthenticated, async (req, res) => {
     try {
         const foundUsers = await db.users.find().toArray();
         res.status(200).send(foundUsers);
@@ -15,7 +15,7 @@ router.get("/users", async (req, res) => {
     }
 });
 
-router.get("/users/:id([0-9a-fA-F]{24})", async (req, res) => {
+router.get("/users/:id([0-9a-fA-F]{24})", isAuthurized, isAuthenticated, async (req, res) => {
     try {
         const foundUser = await db.users.findOne({ _id: new ObjectId(req.params.id) });
         if (!foundUser) {
@@ -28,7 +28,7 @@ router.get("/users/:id([0-9a-fA-F]{24})", async (req, res) => {
     }
 });
 
-router.get("/users/:username", async (req, res) => {
+router.get("/users/:username", isAuthurized, isAuthenticated, async (req, res) => {
     try {
         const foundUser = await db.users.findOne({ username: req.params.username });
         if (!foundUser) {
@@ -41,11 +41,13 @@ router.get("/users/:username", async (req, res) => {
     }
 });
 
-router.post("/users", async (req, res) => {
+router.post("/users", isAuthurized, isAuthenticated, async (req, res) => {
     if (!req.body.username || !req.body.password || !req.body.role) {
         return res.status(400).send({ message: "Missing key in the body" });
     }
+
     const encryptedPassword = await bcrypt.hash(req.body.password, 12);
+
     try {
         const createUser = await db.users.insertOne({ username: req.body.username, password: encryptedPassword, role: req.body.role });
         res.status(201).send({ message: "User created", _id: createUser.insertedId });
@@ -55,11 +57,13 @@ router.post("/users", async (req, res) => {
     }
 });
 
-router.put("/users/:id", async (req, res) => {
+router.put("/users/:id", isAuthurized, isAuthenticated, async (req, res) => {
     if (!req.body.username || !req.body.password || !req.body.role) {
         return res.status(400).send({ message: "Missing key in the body" });
     }
+
     const encryptedPassword = await bcrypt.hash(req.body.password, 12);
+    
     try {
         const updateUser = await db.users.updateOne(
             { _id: new ObjectId(req.params.id) },
@@ -75,7 +79,7 @@ router.put("/users/:id", async (req, res) => {
     }
 });
 
-router.delete("/users/:id", async (req, res) => {
+router.delete("/users/:id", isAuthurized, isAuthenticated, async (req, res) => {
     try {
         const deleteUser = await db.users.deleteOne({ _id: new ObjectId(req.params.id) });
         if(deleteUser.deletedCount === 0){

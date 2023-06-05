@@ -40,29 +40,11 @@
 <main>
   <h3>Register</h3>
   <form on:submit|preventDefault={handleSubmit}>
-    <input
-      bind:value={username}
-      type="text"
-      name="username"
-      placeholder="Username"
-      class="input-field"
-    />
+    <input bind:value={username} type="text" name="username" placeholder="Username" class="input-field" required />
     <br />
-    <input
-      bind:value={email}
-      type="email"
-      name="email"
-      placeholder="Email"
-      class="input-field"
-    />
+    <input bind:value={email} type="email" name="email" placeholder="Email" class="input-field" required />
     <br />
-    <input
-      bind:value={password}
-      type="password"
-      name="password"
-      placeholder="Password"
-      class="input-field"
-    />
+    <input bind:value={password} type="password" name="password" placeholder="Password" class="input-field" required />
     <br />
     <button type="submit" class="submit-button">Register</button>
   </form>

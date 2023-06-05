@@ -1,8 +1,9 @@
 import { ObjectId } from "mongodb";
+import db from "../database/connection.js";
+import { isAuthurized, isAuthenticated } from "../security/security.js"
 import { Router } from "express";
 const router = Router();
 
-import db from "../database/connection.js";
 
 router.get("/workouts", async (req, res) => {
     try {
@@ -40,7 +41,7 @@ router.get("/workouts/:locationname", async (req, res) => {
     }
 });
 
-router.post("/workouts", async (req, res) => {
+router.post("/workouts", isAuthenticated, async (req, res) => {
     if (!req.body.locationname || !req.body.workoutname || !req.body.rating || !req.body.exercises || !req.body.description) {
         return res.status(400).send({ message: "Missing key in the body" });
     }
@@ -60,7 +61,7 @@ router.post("/workouts", async (req, res) => {
     }
 });
 
-router.put("/workouts/:id([0-9a-fA-F]{24})", async (req, res) => {
+router.put("/workouts/:id([0-9a-fA-F]{24})", isAuthenticated, isAuthurized, async (req, res) => {
     if (!req.body.locationname || !req.body.workoutname || !req.body.rating || !req.body.exercises || !req.body.description) {
         return res.status(400).send({ message: "Missing key in the body" });
     }
@@ -84,18 +85,17 @@ router.put("/workouts/:id([0-9a-fA-F]{24})", async (req, res) => {
 });
 
 
-router.delete("/workouts/:id([0-9a-fA-F]{24})", async (req, res) => {
+router.delete("/workouts/:id([0-9a-fA-F]{24})", isAuthenticated, async (req, res) => {
     try {
-
         const foundWorkout = await db.workouts.findOne({ _id: new ObjectId(req.params.id) });
 
         if (!foundWorkout) {
             return res.status(404).send("No workout found.");
         }
-        
-        if(foundWorkout.createdBy !== req.session.user || req.session.role !== "ROLE_ADMIN") return res.status(401).send("Unauthorized");
-     
+
+        if(foundWorkout.createdBy !== req.session.user) return res.status(401).send("Unauthorized");
         const deleteWorkout = await db.workouts.deleteOne({ _id: new ObjectId(req.params.id) });
+        
         if (deleteWorkout.deletedCount === 0) {
             return res.status(404).send("No workout found.");   
         }

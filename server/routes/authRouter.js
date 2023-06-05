@@ -1,19 +1,18 @@
-import { Router } from "express";
-const router = Router();
-
 import nodemailer from "nodemailer";
 import crypto from "crypto";
 import bcrypt from "bcrypt";
-
 import db from "../database/connection.js";
+import { Router } from "express";
+const router = Router();
 
 router.get('/auth/verify/:token', async (req, res) => {
-  const user = await db.users.findOne({ verificationToken: req.params.token });
-  if (!user) {
-    return res.status(400).send('Invalid verification token');
-  }
-  await db.users.updateOne({ _id: user._id }, { $set: { verified: true }, $unset: { verificationToken: true } });
-  res.send('Your account has been verified. You can now log in.');
+    user = await db.users.findOne({ verificationToken: req.params.token });
+
+    if (!user) {
+      return res.status(400).send('Invalid verification token');
+    }
+    await db.users.updateOne({ _id: user._id }, { $set: { verified: true }, $unset: { verificationToken: true } });
+    res.send('Your account has been verified. You can now log in.');
 });
 
 router.get("/auth/logout", (req, res) => {
