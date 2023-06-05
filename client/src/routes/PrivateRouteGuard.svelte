@@ -19,13 +19,13 @@
       replace: true,
     });
     toast.push('Missing credentails!', {
-          theme: {
-          '--toastBackground': '#f0ad4e',
-          '--toastBarBackground': '#3333',
-          },
-          duration: 5000
-        })
-  }
+      theme: {
+      '--toastBackground': '#f0ad4e',
+      '--toastBarBackground': '#3333',
+      },
+      duration: 5000
+    })
+  };
 </script>
 
 {#if $authStore.isAuthenticated}

@@ -28,18 +28,18 @@ app.use(session({
 
 import rateLimit from 'express-rate-limit';
 const apiLimiter = rateLimit({
-	windowMs: 15 * 60 * 1000, // 15 minutes
-	max: 100, // Limit each IP to 100 requests per `window` (here, per 15 minutes)
-	standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
-	legacyHeaders: false, // Disable the `X-RateLimit-*` headers
+    windowMs: 15 * 60 * 1000, 
+    max: 100, 
+    standardHeaders: true,
+    legacyHeaders: false, 
 });
 app.use(apiLimiter);
 
 app.use("/auth", rateLimit({
-	windowMs: 15 * 60 * 1000, 
-	max: 100, //Change after testing is done 
-	standardHeaders: true, 
-	legacyHeaders: false,
+    windowMs: 15 * 60 * 1000, 
+    max: 10, //Change after testing is done 
+    standardHeaders: true, 
+    legacyHeaders: false,
 }));
 
 import http from "http";
@@ -47,30 +47,29 @@ import { Server } from "socket.io";
 
 const server = http.createServer(app);
 const io = new Server(server, {
-  cors: {
-    origin: "*",
-    methods: ["*"],
-  },
+    cors: {
+        origin: "*",
+        methods: ["*"],
+    },
 });
 
 io.on("connection", async(socket) => {
-  socket.on("question", isAuthenticated, async (data) => {
-    console.log("Received question: " + data)
-    const newQuestion = await db.questionboard.insertOne(data);
-    io.emit("newQuestion", data);
-  });
+    socket.on("question", isAuthenticated, async (data) => {
+        const newQuestion = await db.questionboard.insertOne(data);
+        io.emit("newQuestion", data);
+    });
 
-  socket.on("answer", isAuthenticated, async (data) => {
-    console.log("Received answer: ", data);
-    const updatedQuestion = await db.questionboard.findOneAndUpdate(
-      { _id: new ObjectId(data.questionId) }, 
-      { $push: { answers: data } },
-      { returnOriginal: false } 
-    );
-    if (updatedQuestion.value) {
-      io.emit("newAnswer", { user: data.user, text: data.text, questionId: data.questionId });
-    }
-  });
+    socket.on("answer", isAuthenticated, async (data) => {
+        const updatedQuestion = await db.questionboard.findOneAndUpdate(
+            { _id: new ObjectId(data.questionId) }, 
+            { $push: { answers: data } },
+            { returnOriginal: false } 
+        );
+
+      if (updatedQuestion.value) {
+          io.emit("newAnswer", { user: data.user, text: data.text, questionId: data.questionId });
+      }
+    });
   
 });
 
@@ -93,7 +92,7 @@ import imageRouter from "./routes/imageRouter.js";
 app.use(imageRouter);
 
 app.get("*", (req, res) => {
-  res.send("<h1>404 - Not Found</h1>")
+    res.send("<h1>404 - Not Found</h1>")
 });
 
 const PORT = process.env.PORT || 8080;

@@ -14,9 +14,9 @@
 
     async function handleSubmit(event) {
 
-    const imageFile = event.target.elements.image.files[0];
-    const formData = new FormData();
-    formData.append('image', imageFile);
+        const imageFile = event.target.elements.image.files[0];
+        const formData = new FormData();
+        formData.append('image', imageFile);
 
         const uploadResponse = await fetch(`${$BASE_URL}/image`, {
             method: 'POST',
@@ -43,7 +43,7 @@
                     '--toastBackground': 'rgb(90, 200, 90)',
                     '--toastBarBackground': '#3333',
                 }
-            })
+            });
             navigate("/", { replace: true });
         } else {
             toast.push('Adding workout failed', {
@@ -51,43 +51,41 @@
                     '--toastBackground': 'rgb(223, 71, 89)',
                     '--toastBarBackground': '#3333',
                 }
-            })
-        }
+            });
+        };
     };
 
     function addExercise() {
         exercises = [...exercises, {name: '', description: '', sets: '', reps: ''}];
-    }
+    };
 
     function removeExercise(index) {
         if(exercises.length > 1){
             exercises = exercises.filter((_, i) => i !== index);
-        }
-    }
+        };
+    };
 </script>
 
 <main>
-
     <div class="form-container">
-  <form on:submit|preventDefault={handleSubmit}>
-    <div class="left-side">
-        <h3>Add Workout</h3>
-        <input bind:value={locationname} type="text" placeholder="Location Name" class="input-field" readonly />
-        <br />
-        <input bind:value={workoutname} type="text" placeholder="Workout Name" class="input-field" required />
-        <br />
-        <input bind:value={rating} type="number" min="1" max="5" placeholder="Rating (1-5)" class="input-field" required />
-        <br />
-        <textarea bind:value={description} placeholder="Workout Description" class="input-field" required/>
-        <br />
-        <input name="image" type="file" class="input-field" />
-        <br />
-        <button type="button" on:click={addExercise} class="excercise-button">Add Exercise</button>
-        <br />
-        <button type="submit" class="">Add Workout</button>
-    </div>
-
-    <div class="right-side">
+        <form on:submit|preventDefault={handleSubmit}>
+            <div class="left-side">
+                <h3>Add Workout</h3>
+                <input bind:value={locationname} type="text" placeholder="Location Name" class="input-field" readonly />
+                <br />
+                <input bind:value={workoutname} type="text" placeholder="Workout Name" class="input-field" required />
+                <br />
+                <input bind:value={rating} type="number" min="1" max="5" placeholder="Rating (1-5)" class="input-field" required />
+                <br />
+                <textarea bind:value={description} placeholder="Workout Description" class="input-field" required />
+                <br />
+                <input name="image" type="file" class="input-field" />
+                <br />
+                <button type="button" on:click={addExercise} class="excercise-button">Add Exercise</button>
+                <br />
+                <button type="submit" class="">Add Workout</button>
+            </div>
+            <div class="right-side">
         {#each exercises as exercise, i}
         <div class="exercise-container">
             <h4>Exercise {i + 1}</h4>
@@ -146,11 +144,11 @@
     }
 
     .left-side {
-    flex: 1;
-    max-width: 22.5%;
-    padding-right: 20px;
-    margin-left: 25px;
-    position: absolute;
+        flex: 1;
+        max-width: 22.5%;
+        padding-right: 20px;
+        margin-left: 25px;
+        position: absolute;
     }
 
     .right-side {
@@ -193,5 +191,3 @@
         height: 100px;
     }
 </style>
-
-

@@ -1,43 +1,42 @@
 <script>
-	import { Router, Link, Route } from "svelte-navigator";
-  import Home from "./pages/Home/Home.svelte";
-  import Login from "./pages/Login/Login.svelte";
-  import PrivateRoute from "./routes/PrivateRoute.svelte";
-  import User from "./pages/User/User.svelte";
-  import Admin from "./pages/Admin/Admin.svelte";
-  import Register from "./pages/Register/Register.svelte";
-  import WorkoutDetails from "./pages/WorkoutDetails/WorkoutDetails.svelte";
-  import { authStore } from "./store/authStores.js";
-  import { SvelteToast } from '@zerodevx/svelte-toast'
-  import { Jumper } from 'svelte-loading-spinners'
-  import { BASE_URL } from "./store/globalStores.js";
-  import WorkoutSpots from "./pages/WorkoutSpots/WorkoutSpots.svelte";
-  import CreateWorkout from "./pages/CreateWorkout/CreateWorkout.svelte";
-  import QuestionBoard from "./pages/QuestionBoard/QuestionBoard.svelte";
-  
-  let isLoading = true;
+    import { Router, Link, Route } from "svelte-navigator";
+    import Home from "./pages/Home/Home.svelte";
+    import Login from "./pages/Login/Login.svelte";
+    import PrivateRoute from "./routes/PrivateRoute.svelte";
+    import User from "./pages/User/User.svelte";
+    import Admin from "./pages/Admin/Admin.svelte";
+    import Register from "./pages/Register/Register.svelte";
+    import WorkoutDetails from "./pages/WorkoutDetails/WorkoutDetails.svelte";
+    import { authStore } from "./store/authStores.js";
+    import { SvelteToast } from '@zerodevx/svelte-toast'
+    import { Jumper } from 'svelte-loading-spinners'
+    import { BASE_URL } from "./store/globalStores.js";
+    import WorkoutSpots from "./pages/WorkoutSpots/WorkoutSpots.svelte";
+    import CreateWorkout from "./pages/CreateWorkout/CreateWorkout.svelte";
+    import QuestionBoard from "./pages/QuestionBoard/QuestionBoard.svelte";
 
-  function handleLogout() {
+    let isLoading = true;
 
-    $authStore = { isAuthenticated: false, username: null, role: null };
-    
-    fetch(`${$BASE_URL}/auth/logout`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      credentials: 'include'
-    })
-  }
+    function handleLogout() {
 
- // simulate a delay to test the loading spinner
- setTimeout(() => {
-    isLoading = false;
-  }, 1000);
+        $authStore = { isAuthenticated: false, username: null, role: null };
+        
+        fetch(`${$BASE_URL}/auth/logout`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            credentials: 'include'
+        });
+    };
 
-//for producktion
-//window.onload = () => isLoading = false;
+    // simulate a delay to test the spinner
+    //  setTimeout(() => {
+    //     isLoading = false;
+    //   }, 1000);
 
+    //for producktion
+    window.onload = () => isLoading = false;
 </script>
 
 <SvelteToast options={{ reversed: true, intro: { y: 192 } }} />
@@ -156,23 +155,23 @@
   }
 
   .nav-link {
-      margin-left: 10px;
+    margin-left: 10px;
   }
 
   button {
-      margin-top: 20px;
-      padding: 10px 20px;
-      font-size: 18px;
-      border-radius: 5px;
-      border: none;
-      color: #333333;
-      background-color: #A8E6CF;
-      cursor: pointer;
-      transition: all 0.3s ease;
-    }
+    margin-top: 20px;
+    padding: 10px 20px;
+    font-size: 18px;
+    border-radius: 5px;
+    border: none;
+    color: #333333;
+    background-color: #A8E6CF;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
   
-    button:hover {
-      background-color: #a8cbe6;
-    }
+  button:hover {
+    background-color: #a8cbe6;
+  }
 
 </style>

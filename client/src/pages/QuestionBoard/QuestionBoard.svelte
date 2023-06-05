@@ -10,8 +10,7 @@
     export const questionInput = writable('');
     export const answerInput = writable('');
   
-    onMount( async () => {
-
+onMount( async () => {
     const response = await fetch(`${$BASE_URL}/questions`, {credentials: 'include'});
     let receivedQuestions = await response.json();
     receivedQuestions.sort( (a, b) => new Date(b.date) - new Date(a.date) );
@@ -21,15 +20,16 @@
         questions.update((qs) => [data, ...qs]);
     });
   
-      socket.on('newAnswer', (data) => {
-        console.log('received new answer:', data); 
+    socket.on('newAnswer', (data) => {
         questions.update((qs) => {
             const questionIndex = qs.findIndex((question) => question._id === data.questionId);
+
             if (questionIndex !== -1) {
                 const newQuestion = { ...qs[questionIndex] };
                 if (!Array.isArray(newQuestion.answers)) {
                     newQuestion.answers = [];
                 }
+
                 newQuestion.answers.push({ user: data.user, text: data.text });
 
                 // Replaces the array for Svelte to recognize the update
@@ -42,76 +42,71 @@
             return qs;
         });
     });
-
-
 });
 
     function askQuestion() {
-      const data = { user: $authStore.username, text: $questionInput, date: new Date(), answers: [] };
-      socket.emit('question', data);
-      questionInput.set('');
+        const data = { user: $authStore.username, text: $questionInput, date: new Date(), answers: [] };
+        socket.emit('question', data);
+        questionInput.set('');
     }
   
     function postAnswer(questionId) {
-      const data = {  user: $authStore.username, questionId: questionId, text: $answerInput };
-      socket.emit('answer', data);
-      answerInput.set('');
+        const data = {  user: $authStore.username, questionId: questionId, text: $answerInput };
+        socket.emit('answer', data);
+        answerInput.set('');
     }
 
     function formatDate(dateString) {
         const options = { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' };
         return new Date(dateString).toLocaleString('en-UK', options);   
     }
-  </script>
+</script>
   
-  <main>
-    <h1>Question Board</h1>
-
-    <div class="question-board-container">
-
-        <form on:submit|preventDefault={askQuestion}>
-            <h3> Ask a question to the comunity: </h3>
-            <textarea class="input-field" placeholder="Ask your question..." bind:value={$questionInput} name="question" /> 
-            <button class="submit-button" type="submit">Ask</button>
-          </form>
-
-    {#if $questions.length === 0}
-      <p>No questions yet.</p>
-    {:else}
-      {#each $questions as question}
-        <div class="question">
-            <h3 class="margin-left">{question.user} asks:</h3>
-            <p class="margin-left">{question.text}</p>
-            <p class="margin-left highlight-username">{formatDate(question.date)}</p>
+<main>
+  <h1>Question Board</h1>
+  <div class="question-board-container">
+      <form on:submit|preventDefault={askQuestion}>
+          <h3> Ask a question to the comunity: </h3>
+          <textarea class="input-field" placeholder="Ask your question..." bind:value={$questionInput} name="question" />
+          <button class="submit-button" type="submit">Ask</button>
+      </form> 
+  {#if $questions.length === 0}
+    <p>No questions yet.</p>
+  {:else}
+    {#each $questions as question}
+      <div class="question">
+          <h3 class="margin-left">{question.user} asks:</h3>
+          <p class="margin-left">{question.text}</p>
+          <p class="margin-left highlight-username">{formatDate(question.date)}</p>
           <button class="show-answer-button" on:click={() => question.open = !question.open}>
             {question.open ? "Hide answers" : "Show answers"}
           </button>
-  
-          {#if question.open}
-            {#if question.answers === undefined || question.answers.length === 0}
-                <p>No answers yet.</p>
-            {:else}
-                {#each question.answers as answer}
-                <div class="answer">
-                    <p class="highlight-username">{answer.user}</p>
-                    <p>{answer.text}</p>
-                </div>
-                {/each}
-            {/if}
-  
-            <form on:submit|preventDefault={() => postAnswer(question._id)}>
-              <h3>Give answer:</h3>
-              <textarea class="input-field" bind:value={$answerInput} name={'answer-' + question._id} />
-              <button class="submit-button" type="submit">Post</button>
-            </form>
+
+        {#if question.open}
+          {#if question.answers === undefined || question.answers.length === 0}
+              <p>No answers yet.</p>
+          {:else}
+              {#each question.answers as answer}
+              <div class="answer">
+                  <p class="highlight-username">{answer.user}</p>
+                  <p>{answer.text}</p>
+              </div>
+              {/each}
           {/if}
-        </div>
-      {/each}
-    {/if}
-    </div>
+
+          <form on:submit|preventDefault={() => postAnswer(question._id)}>
+            <h3>Give answer:</h3>
+            <textarea class="input-field" bind:value={$answerInput} name={'answer-' + question._id} />
+            <button class="submit-button" type="submit">Post</button>
+          </form>
+        {/if}
+      </div>
+    {/each}
+  {/if}
+  </div>
 </main>
-  
-  <style>
+
+<style>
     main {
         display: flex;
         flex-direction: column;
@@ -148,57 +143,57 @@
     }
 
     .question-board-container {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      margin-bottom: 60px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin-bottom: 60px;
     }
 
     .question {
-      width: 80vw;
-      padding: 1rem;
-      border: 1px solid black;
-      border-radius: 15px;
+        width: 80vw;
+        padding: 1rem;
+        border: 1px solid black;
+        border-radius: 15px;
     }
-  
+
     .answer {
-      margin: 10px 0;
-      padding: 10px;
-      border: 1px solid grey;
-      border-radius: 10px;
+        margin: 10px 0;
+        padding: 10px;
+        border: 1px solid grey;
+        border-radius: 10px;
     }
 
     .input-field {
-    font-size: 18px;
-    padding: 10px;
-    width: 300px;
-    border-radius: 5px;
-    transition: all 0.3s ease;
-    background-color: #f0f8ff;
-    border: 1px solid #8ac6d1;
-    color: black;
-  }
+        font-size: 18px;
+        padding: 10px;
+        width: 300px;
+        border-radius: 5px;
+        transition: all 0.3s ease;
+        background-color: #f0f8ff;
+        border: 1px solid #8ac6d1;
+        color: black;
+    }
 
-  .input-field:focus {
-    border-color: #007BFF;
-    box-shadow: 0 0 10px #A8E6CF;
-  }
+    .input-field:focus {
+        border-color: #007BFF;
+        box-shadow: 0 0 10px #A8E6CF;
+    }
 
-  .submit-button {
-    margin-top: 10;
-    margin-left: 25px;
-    padding: 10px 20px;
-    font-size: 18px;
-    border-radius: 5px;
-    border: none;
-    color: #333333;
-    background-color: #A8E6CF;
-    cursor: pointer;
-    transition: all 0.3s ease;
-  }
+    .submit-button {
+        margin-top: 10;
+        margin-left: 25px;
+        padding: 10px 20px;
+        font-size: 18px;
+        border-radius: 5px;
+        border: none;
+        color: #333333;
+        background-color: #A8E6CF;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
 
-  .submit-button:hover {
-    background-color: #a8cbe6;
-  }
+    .submit-button:hover {
+        background-color: #a8cbe6;
+    }
 
 </style>

@@ -13,70 +13,72 @@
     let lng;
   
     let mapContainer;
+    let marker;
   
     onMount(async () =>  {
-      const loader = new Loader({
-          apiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY,
-          version: 'weekly',
-      });
-      const google = await loader.load();
-
-      const map = new google.maps.Map(mapContainer, {
-        center: { lat: 55.6761, lng: 12.5683 },
-        zoom: 12,
-      });
-
-      let marker;
-
-      map.addListener('click', (event) => {
-        if (marker) {
-          marker.setMap(null);
-        }
-        marker = new google.maps.Marker({
-          position: event.latLng,
-          map: map,
+        const loader = new Loader({
+            apiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY,
+            version: 'weekly',
         });
-        lat = marker.getPosition().lat();
-        lng = marker.getPosition().lng();
-      });
+
+        const google = await loader.load();
+
+        const map = new google.maps.Map(mapContainer, {
+          center: { lat: 55.6761, lng: 12.5683 },
+          zoom: 12,
+        });
+
+
+        map.addListener('click', (event) => {
+            if (marker) marker.setMap(null);
+
+            marker = new google.maps.Marker({
+                position: event.latLng,
+                map: map,
+            });
+
+            lat = marker.getPosition().lat();
+            lng = marker.getPosition().lng();
+        });
     });
   
     async function handleSubmit() {
-      const locationData = { name, description, lat, lng};
-      const res = await fetch(`${$BASE_URL}/markers`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        credentials: 'include',
-        body: JSON.stringify(locationData)
-      });
+        const locationData = { name, description, lat, lng};
+        
+        const res = await fetch(`${$BASE_URL}/markers`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            credentials: 'include',
+            body: JSON.stringify(locationData)
+        });
   
-      if (res.ok) {
-        toast.push('Location added successfully!', {
-          theme: {
-            '--toastBackground': 'rgb(90, 200, 90)',
-            '--toastBarBackground': '#3333',
-          }
-        })
-        navigate("/", { replace: true });
-      } else if(res.status == 409) {
-        toast.push('Location name already exists', {
-          theme: {
-            '--toastBackground': 'rgb(223, 71, 89)',
-            '--toastBarBackground': '#3333',
-          }
-        })
-      } else {
-        toast.push('Adding location failed', {
-          theme: {
-            '--toastBackground': 'rgb(223, 71, 89)',
-            '--toastBarBackground': '#3333',
-          }
-        })
-      }
+        if (res.ok) {
+            toast.push('Location added successfully!', {
+                theme: {
+                    '--toastBackground': 'rgb(90, 200, 90)',
+                    '--toastBarBackground': '#3333',
+                }
+            });
+            navigate("/", { replace: true });
+        } else if(res.status == 409) {
+            toast.push('Location name already exists', {
+                theme: {
+                    '--toastBackground': 'rgb(223, 71, 89)',
+                    '--toastBarBackground': '#3333',
+                }
+            });
+        } else {
+            toast.push('Adding location failed', {
+                theme: {
+                    '--toastBackground': 'rgb(223, 71, 89)',
+                    '--toastBarBackground': '#3333',
+                }
+            });
+        };
     };
-  </script>
+</script>
   
   <main>
     <div class="form-container">

@@ -53,9 +53,9 @@
     });
 
     function navigateWithWorkoutDetails(workout) {
-    selectedWorkout.set(workout);
-    navigate("/workoutdetails");
-    }
+        selectedWorkout.set(workout);
+        navigate("/workoutdetails");
+    };
 
     function deleteWorkout(workoutId, wourkoutImage) {
 
@@ -73,7 +73,7 @@
         });
 
         workouts.update(currentWorkouts => currentWorkouts.filter(workout => workout._id !== workoutId));
-}
+    };
 
 
 </script>
@@ -82,8 +82,7 @@
     <h1>Workout Spots</h1>
     <h2>Here you can find all the workout spots in Copenhagen. Select a workout spot on the map to see user made workouts for each spot.</h2>
     <div class="container">
-           <div class="map-area">
-            {#if $authStore.isAuthenticated && $selectedWorkoutMarker}
+        <div class="map-area"> {#if $authStore.isAuthenticated && $selectedWorkoutMarker}
                 <button class="large-button" on:click={ () => navigate(`/createworkout/${$selectedWorkoutMarker.name}`) } >Add workout to: {$selectedWorkoutMarker.name}</button>
             {:else}
                 <div class="empty-space-for-large-button"></div>
@@ -93,22 +92,22 @@
             </div>
         </div>
         <div class="content-container">
-                <h2 class="margin-for-rigth-side">{ $selectedWorkoutMarker ? "Workouts for: " + $selectedWorkoutMarker.name : " Select a location to see the workouts" }</h2>
-                <div class="workouts-list">
-                    {#each $sortedWorkouts as workout}
-                    <div class="workout-item" on:click={() => navigateWithWorkoutDetails(workout)} on:keypress={e => {if (e.key === 'Enter') navigateWithWorkoutDetails(workout)}}>
-                        <img src={workout.image ? workout.image : 'src/assets/images/pulling-up-training-silhouette-svgrepo-com.png'} alt="">
-                            <div>
-                                <p class="workoutname">{workout.workoutname}</p>
-                                <p class="workoutrating"><StarRating rating={workout.rating} /></p>
-                                <p>{workout.description}</p>
-                            </div>
-                            {#if $authStore.username === workout.createdBy}
-                                <button on:click={ () => deleteWorkout(workout._id, workout.image)} >Delete</button>
-                            {/if}
+            <h2 class="margin-for-rigth-side">{ $selectedWorkoutMarker ? "Workouts for: " + $selectedWorkoutMarker.name : " Select a location to see the workouts" }</h2>
+            <div class="workouts-list">
+                {#each $sortedWorkouts as workout}
+                <div class="workout-item" on:click={() => navigateWithWorkoutDetails(workout)} on:keypress={e => {if (e.key === 'Enter') navigateWithWorkoutDetails(workout)}}>
+                    <img src={workout.image ? workout.image : 'src/assets/images/pulling-up-training-silhouette-svgrepo-com.png'} alt="">
+                        <div>
+                            <p class="workoutname">{workout.workoutname}</p>
+                            <p class="workoutrating"><StarRating rating={workout.rating} /></p>
+                            <p>{workout.description}</p>
                         </div>
-                    {/each}
-                </div>
+                        {#if $authStore.username === workout.createdBy}
+                            <button on:click={ () => deleteWorkout(workout._id, workout.image)} >Delete</button>
+                        {/if}
+                    </div>
+                {/each}
+            </div>
         </div>
     </div>
 </main>
@@ -160,7 +159,7 @@
     }
 
     .large-button:hover {
-         background-color: #a8cbe6;
+        background-color: #a8cbe6;
     }
 
     .map-div {
